@@ -15,10 +15,10 @@ std::vector<uint8_t> Protocol::createPacket(PacketType type, const std::vector<u
     PacketHeader* header = reinterpret_cast<PacketHeader*>(packet.data());
     header->version = CURRENT_VERSION;
     header->type = type;
-    // Store in little-endian. x86/x64 are little-endian natively, so direct assignment works.
-    // For full portability:
-    // header->payloadLength = (payload.size() & 0xFF) | ((payload.size() >> 8) << 8);
-    header->payloadLength = static_cast<uint16_t>(payload.size());
+    
+    // Store in Big-Endian (Network Byte Order)
+    uint16_t len = static_cast<uint16_t>(payload.size());
+    header->payloadLength = ((len & 0xFF00) >> 8) | ((len & 0x00FF) << 8);
 
     if (!payload.empty()) {
         std::memcpy(packet.data() + sizeof(PacketHeader), payload.data(), payload.size());
@@ -39,6 +39,11 @@ bool Protocol::parsePacket(std::vector<uint8_t>& buffer, PacketHeader& outHeader
 
     PacketHeader header;
     std::memcpy(&header, buffer.data(), sizeof(PacketHeader));
+
+    // Convert from Big-Endian (Network Byte Order)
+    uint16_t netLen = header.payloadLength;
+    uint16_t hostLen = ((netLen & 0xFF00) >> 8) | ((netLen & 0x00FF) << 8);
+    header.payloadLength = hostLen;
 
     if (buffer.size() < sizeof(PacketHeader) + header.payloadLength) {
         return false; // Not enough data yet

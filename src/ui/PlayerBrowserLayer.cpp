@@ -106,10 +106,17 @@ void PlayerBrowserLayer::updateList(float dt) {
         label->setPosition({10.f, y});
         m_listLayer->addChild(label);
         
-        auto btnSprite = ButtonSprite::create("Collab");
+        bool isConnected = (network::Session::get().getState() == network::SessionState::Connected);
+        auto btnSprite = ButtonSprite::create(isConnected ? "Re-sync" : "Collab");
         btnSprite->setScale(0.5f);
         
-        auto btn = CCMenuItemExt::createSpriteExtra(btnSprite, [this, peer](auto) {
+        auto btn = CCMenuItemExt::createSpriteExtra(btnSprite, [this, peer, isConnected](auto) {
+            if (isConnected) {
+                network::SyncManager::get().sendLevelSync();
+                FLAlertLayer::create("Collab Status", "Manual sync request sent!", "OK")->show();
+                return;
+            }
+
             if (network::Session::get().connectToPeer(peer.ip)) {
                 auto username = GJAccountManager::sharedState()->m_username;
                 if (username.empty()) username = "Player";

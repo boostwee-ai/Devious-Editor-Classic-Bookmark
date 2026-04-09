@@ -115,12 +115,20 @@ void SyncManager::handleIncomingPacket(const PacketHeader& header, const std::ve
         case PacketType::CollabResponse: {
             if (payloadStr == "Yes") {
                 log::info("Collaboration accepted!");
+                FLAlertLayer::create("Collab Status", "Collaboration accepted! Synchronizing level...", "OK")->show();
                 // Host sends level to client
                 SyncManager::get().sendLevelSync();
             } else {
                 FLAlertLayer::create("Collab Status", "Collaboration request was declined.", "OK")->show();
                 Session::get().disconnect();
             }
+            break;
+        }
+        case PacketType::LevelSync: {
+            if (!lel) break;
+            log::info("Received level sync data");
+            editor::ActionSerializer::deserializeAndApplyLevel(payloadStr, lel);
+            FLAlertLayer::create("Collab Status", "Level Synchronized!", "OK")->show();
             break;
         }
         default:

@@ -47,6 +47,7 @@ public:
     
     // Convert current level string
     static std::string serializeLevel(LevelEditorLayer* lel);
+    static void deserializeAndApplyLevel(const std::string& data, LevelEditorLayer* lel);
 };
 
 } // namespace editor

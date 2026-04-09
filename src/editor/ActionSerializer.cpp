@@ -92,13 +92,45 @@ void ActionSerializer::deserializeTransform(const std::string& data, LevelEditor
 }
 
 std::string ActionSerializer::serializeLevel(LevelEditorLayer* lel) {
-    // A production version would save the whole string. For now, empty placeholder.
-    // In GD, getting full level string usually requires GJGameLevel::m_levelString
-    // and packing it.
-    if (lel && lel->m_levelSettings) {
-        // Can be complex to generate entirely. Let's return rudimentary
+    if (!lel) return "{}";
+    
+    matjson::Value json;
+    matjson::Value objects = matjson::Array();
+    
+    for (auto obj : CCArrayExt<GameObject*>(lel->m_objects)) {
+        // Reuse serializeObject but parse it back to a Value to avoid double stringification
+        auto objStr = serializeObject(obj);
+        auto objJson = matjson::parse(objStr);
+        if (objJson.isOk()) {
+            objects.push(objJson.unwrap());
+        }
     }
-    return "{}";
+    
+    json["objects"] = objects;
+    return json.dump(matjson::NO_INDENTATION);
+}
+
+void ActionSerializer::deserializeAndApplyLevel(const std::string& data, LevelEditorLayer* lel) {
+    if (!lel) return;
+
+    auto jsonRes = matjson::parse(data);
+    if (jsonRes.isErr()) return;
+    auto json = jsonRes.unwrap();
+
+    if (!json["objects"].isArray()) return;
+
+    // Clear current level
+    // Note: We avoid deleteObject to prevent massive undo/redo or sync spam
+    lel->m_objects->removeAllObjects();
+    lel->m_objectLayer->removeAllChildrenWithCleanup(true);
+
+    auto objects = json["objects"].asArray().unwrap();
+    for (const auto& objValue : objects) {
+        std::string objStr = objValue.dump(matjson::NO_INDENTATION);
+        deserializeAndApplyObject(objStr, lel);
+    }
+
+    log::info("Applied level sync with {} objects", objects.size());
 }
 
 } // namespace editor

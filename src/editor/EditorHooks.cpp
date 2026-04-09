@@ -72,6 +72,11 @@ class $modify(MyLevelEditorLayer, LevelEditorLayer) {
     }
 
     void updateSync(float dt) {
+        // Auto-restart host listener if disconnected
+        if (network::Session::get().getState() == network::SessionState::Disconnected) {
+            network::Session::get().startHost();
+        }
+
         auto objLayer = this->m_objectLayer;
         float x = -objLayer->getPositionX() / objLayer->getScale();
         float y = -objLayer->getPositionY() / objLayer->getScale();
