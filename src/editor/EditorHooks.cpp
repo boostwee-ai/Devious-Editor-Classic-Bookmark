@@ -36,10 +36,10 @@ class $modify(MyEditorUI, EditorUI) {
         }
     }
 
-    void scaleObjects(float p0, float p1, cocos2d::CCPoint p2, ObjectScaleType p3, bool p4, cocos2d::CCArray* p5) {
-        EditorUI::scaleObjects(p0, p1, p2, p3, p4, p5);
+    void scaleObjects(cocos2d::CCArray* objects, float scaleX, float scaleY, cocos2d::CCPoint pivot, ObjectScaleType type, bool lock) {
+        EditorUI::scaleObjects(objects, scaleX, scaleY, pivot, type, lock);
         if (!network::SyncManager::get().isSyncing()) {
-            for (auto item : CCArrayExt<GameObject*>(p5)) {
+            for (auto item : CCArrayExt<GameObject*>(objects)) {
                 network::SyncManager::get().sendAction(editor::ActionType::TransformObject, editor::ActionSerializer::serializeTransform(item));
             }
         }
