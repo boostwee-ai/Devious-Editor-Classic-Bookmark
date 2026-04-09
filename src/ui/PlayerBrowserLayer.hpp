@@ -8,7 +8,7 @@ namespace ui {
 
 class PlayerBrowserLayer : public geode::Popup {
 protected:
-    bool init(float width, float height) override;
+    bool init(float width, float height);
     
     void updateList(float dt);
     
