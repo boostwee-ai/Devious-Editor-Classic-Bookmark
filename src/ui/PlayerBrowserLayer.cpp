@@ -36,10 +36,6 @@ bool PlayerBrowserLayer::init(float width, float height) {
     return true;
 }
 
-void PlayerBrowserLayer::onClose(cocos2d::CCObject* sender) {
-    geode::Popup::onClose(sender);
-}
-
 void PlayerBrowserLayer::updateList(float dt) {
     m_listLayer->removeAllChildrenWithCleanup(true);
     
