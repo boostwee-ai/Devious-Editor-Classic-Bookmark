@@ -5,7 +5,11 @@ project(devious-editor-classic-bookmark VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Geode REQUIRED HINTS $ENV{GEODE_SDK})
+message(STATUS "GEODE_SDK environment variable: $ENV{GEODE_SDK}")
+if(DEFINED ENV{GEODE_SDK})
+    set(Geode_DIR "$ENV{GEODE_SDK}")
+endif()
+find_package(Geode REQUIRED)
 
 # Need sockets for mac/windows
 if(WIN32)
