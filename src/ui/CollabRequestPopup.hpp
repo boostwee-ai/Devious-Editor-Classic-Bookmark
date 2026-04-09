@@ -6,9 +6,10 @@
 
 namespace ui {
 
-class CollabRequestPopup : public geode::Popup<std::string const&> {
+class CollabRequestPopup : public geode::Popup {
+    std::string m_username;
 protected:
-    bool setup(std::string const& username) override;
+    bool init(float width, float height, std::string const& username) override;
 
     void onYes(cocos2d::CCObject*);
     void onNo(cocos2d::CCObject*);

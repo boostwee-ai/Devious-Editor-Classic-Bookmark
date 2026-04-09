@@ -9,7 +9,7 @@ namespace ui {
 
 CollabRequestPopup* CollabRequestPopup::create(std::string const& username) {
     auto ret = new CollabRequestPopup();
-    if (ret && ret->initAnchored(300.f, 200.f, username)) {
+    if (ret && ret->init(300.f, 200.f, username)) {
         ret->autorelease();
         return ret;
     }
@@ -17,17 +17,17 @@ CollabRequestPopup* CollabRequestPopup::create(std::string const& username) {
     return nullptr;
 }
 
-bool CollabRequestPopup::setup(std::string const& username) {
+bool CollabRequestPopup::init(float width, float height, std::string const& username) {
+    if (!geode::Popup::init(width, height)) return false;
+    m_username = username;
+
     this->m_noElasticity = true;
     this->setTitle("Collaboration Request");
 
     auto label = CCLabelBMFont::create(fmt::format("{} would like to collaborate with you.", username).c_str(), "bigFont.fnt");
     label->setScale(0.5f);
-    label->setPosition(
-        this->m_mainLayer->getContentSize().width / 2,
-        this->m_mainLayer->getContentSize().height / 2 + 20
-    );
-    this->m_mainLayer->addChild(label);
+    label->setPosition(this->getContentSize() / 2 + CCPoint{0.f, 20.f});
+    this->addChild(label);
 
     auto yesBtnSprite = ButtonSprite::create("Yes");
     auto noBtnSprite = ButtonSprite::create("No");
@@ -39,11 +39,8 @@ bool CollabRequestPopup::setup(std::string const& username) {
     menu->addChild(yesBtn);
     menu->addChild(noBtn);
     menu->alignItemsHorizontallyWithPadding(20.f);
-    menu->setPosition({
-        this->m_mainLayer->getContentSize().width / 2,
-        this->m_mainLayer->getContentSize().height / 2 - 30
-    });
-    this->m_mainLayer->addChild(menu);
+    menu->setPosition(this->getContentSize() / 2 - CCPoint{0.f, 30.f});
+    this->addChild(menu);
 
     return true;
 }

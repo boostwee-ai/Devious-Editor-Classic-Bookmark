@@ -6,11 +6,10 @@
 
 namespace ui {
 
-class PlayerBrowserLayer : public geode::Popup<> {
+class PlayerBrowserLayer : public geode::Popup {
 protected:
-    bool setup() override;
-    void onClose(cocos2d::CCObject* sender) override;
-
+    bool init(float width, float height) override;
+    
     void updateList(float dt);
     
     cocos2d::CCNode* m_listLayer;

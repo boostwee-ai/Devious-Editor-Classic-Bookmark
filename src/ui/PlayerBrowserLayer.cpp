@@ -10,7 +10,7 @@ namespace ui {
 
 PlayerBrowserLayer* PlayerBrowserLayer::create() {
     auto ret = new PlayerBrowserLayer();
-    if (ret && ret->initAnchored(360.f, 240.f, "GJ_square01.png")) {
+    if (ret && ret->init(360.f, 240.f)) {
         ret->autorelease();
         return ret;
     }
@@ -18,18 +18,17 @@ PlayerBrowserLayer* PlayerBrowserLayer::create() {
     return nullptr;
 }
 
-bool PlayerBrowserLayer::setup() {
+bool PlayerBrowserLayer::init(float width, float height) {
+    if (!geode::Popup::init(width, height)) return false;
+
     this->m_noElasticity = true;
     this->setTitle("LAN Players");
     
     m_listLayer = CCNode::create();
     m_listLayer->setContentSize({340.f, 180.f});
-    m_listLayer->setPosition({
-        this->m_mainLayer->getContentSize().width / 2,
-        this->m_mainLayer->getContentSize().height / 2 - 10
-    });
+    m_listLayer->setPosition(this->getContentSize() / 2 - CCPoint{0.f, 10.f});
     m_listLayer->setAnchorPoint({0.5f, 0.5f});
-    this->m_mainLayer->addChild(m_listLayer);
+    this->addChild(m_listLayer);
 
     this->schedule(schedule_selector(PlayerBrowserLayer::updateList), 1.0f);
     updateList(0.f);
@@ -38,7 +37,7 @@ bool PlayerBrowserLayer::setup() {
 }
 
 void PlayerBrowserLayer::onClose(cocos2d::CCObject* sender) {
-    geode::Popup<>::onClose(sender);
+    geode::Popup::onClose(sender);
 }
 
 void PlayerBrowserLayer::updateList(float dt) {
