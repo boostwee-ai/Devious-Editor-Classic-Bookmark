@@ -50,14 +50,14 @@ bool CollabRequestPopup::setup(std::string const& username) {
 void CollabRequestPopup::onYes(cocos2d::CCObject*) {
     // Send response and setup sync
     network::Session::get().sendPacket(network::Protocol::createPacket(network::PacketType::CollabResponse, "Yes"));
-    this->FLAlertLayer::onClose(nullptr);
+    this->keyBackClicked();
 }
 
 void CollabRequestPopup::onNo(cocos2d::CCObject*) {
     // Decline
     network::Session::get().sendPacket(network::Protocol::createPacket(network::PacketType::CollabResponse, "No"));
     network::Session::get().disconnect();
-    this->FLAlertLayer::onClose(nullptr);
+    this->keyBackClicked();
 }
 
 } // namespace ui
