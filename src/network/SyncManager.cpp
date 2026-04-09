@@ -83,13 +83,10 @@ void SyncManager::handleIncomingPacket(const PacketHeader& header, const std::ve
                 } else if (type == editor::ActionType::RemoveObject) {
                     int uid = editor::ActionSerializer::deserializeRemove(data);
                     if (uid != -1) {
-                        CCObject* item;
-                        CCARRAY_FOREACH(lel->m_objects, item) {
-                            if (auto obj = typeinfo_cast<GameObject*>(item)) {
-                                if (obj->m_uniqueID == uid) {
-                                    lel->m_editorUI->deleteObject(obj, false);
-                                    break;
-                                }
+                        for (auto item : CCArrayExt<GameObject*>(lel->m_objects)) {
+                            if (item->m_uniqueID == uid) {
+                                lel->m_editorUI->deleteObject(item, false);
+                                break;
                             }
                         }
                     }

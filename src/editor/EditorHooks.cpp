@@ -35,11 +35,8 @@ class $modify(MyEditorUI, EditorUI) {
     void scaleObjects(cocos2d::CCArray* p0, float p1, cocos2d::CCPoint p2) {
         EditorUI::scaleObjects(p0, p1, p2);
         if (!network::SyncManager::get().isSyncing()) {
-            CCObject* item;
-            CCARRAY_FOREACH(p0, item) {
-                if (auto obj = typeinfo_cast<GameObject*>(item)) {
-                    network::SyncManager::get().sendAction(editor::ActionType::TransformObject, editor::ActionSerializer::serializeTransform(obj));
-                }
+            for (auto item : CCArrayExt<GameObject*>(p0)) {
+                network::SyncManager::get().sendAction(editor::ActionType::TransformObject, editor::ActionSerializer::serializeTransform(item));
             }
         }
     }

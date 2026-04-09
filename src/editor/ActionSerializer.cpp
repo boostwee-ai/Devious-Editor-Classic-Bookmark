@@ -76,20 +76,17 @@ void ActionSerializer::deserializeTransform(const std::string& data, LevelEditor
     int uid = json["uid"].asInt().unwrapOr(-1);
     
     // Find object loosely
-    CCObject* item;
-    CCARRAY_FOREACH(lel->m_objects, item) {
-        if (auto obj = typeinfo_cast<GameObject*>(item)) {
-            if (obj->m_uniqueID == uid) {
-                obj->setPosition({
-                    static_cast<float>(json["x"].asDouble().unwrapOr(0.0)),
-                    static_cast<float>(json["y"].asDouble().unwrapOr(0.0))
-                });
-                obj->setRotation(json["r"].asDouble().unwrapOr(0.0));
-                obj->setScaleX(json["sx"].asDouble().unwrapOr(1.0));
-                obj->setScaleY(json["sy"].asDouble().unwrapOr(1.0));
-                obj->setZOrder(json["zOrder"].asInt().unwrapOr(0));
-                break;
-            }
+    for (auto item : CCArrayExt<GameObject*>(lel->m_objects)) {
+        if (item->m_uniqueID == uid) {
+            item->setPosition({
+                static_cast<float>(json["x"].asDouble().unwrapOr(0.0)),
+                static_cast<float>(json["y"].asDouble().unwrapOr(0.0))
+            });
+            item->setRotation(json["r"].asDouble().unwrapOr(0.0));
+            item->setScaleX(json["sx"].asDouble().unwrapOr(1.0));
+            item->setScaleY(json["sy"].asDouble().unwrapOr(1.0));
+            item->setZOrder(json["zOrder"].asInt().unwrapOr(0));
+            break;
         }
     }
 }
