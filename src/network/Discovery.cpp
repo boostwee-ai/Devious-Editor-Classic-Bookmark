@@ -30,7 +30,7 @@ Discovery::~Discovery() {
 bool Discovery::start() {
     if (m_running.load()) return true;
 
-    if (!utils::Platform::initializeSockets()) {
+    if (!dutils::Platform::initializeSockets()) {
         log::error("Failed to initialize sockets");
         return false;
     }
@@ -54,7 +54,7 @@ bool Discovery::start() {
 
     if (bind(sock, (struct sockaddr*)&listenAddr, sizeof(listenAddr)) < 0) {
         log::error("Failed to bind UDP listening socket");
-        utils::Platform::closeSocket(sock);
+        dutils::Platform::closeSocket(sock);
         return false;
     }
 
@@ -72,14 +72,14 @@ void Discovery::stop() {
     m_running.store(false);
     
     if (m_listenSock != -1) {
-        utils::Platform::closeSocket(m_listenSock);
+        dutils::Platform::closeSocket(m_listenSock);
         m_listenSock = -1;
     }
 
     if (m_broadcastThread.joinable()) m_broadcastThread.join();
     if (m_listenThread.joinable()) m_listenThread.join();
     
-    utils::Platform::cleanupSockets();
+    dutils::Platform::cleanupSockets();
 }
 
 void Discovery::setLocalState(const std::string& username, bool inEditor, bool collabEnabled) {
@@ -145,7 +145,7 @@ void Discovery::broadcastLoop() {
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
-    utils::Platform::closeSocket(broadcastSock);
+    dutils::Platform::closeSocket(broadcastSock);
 }
 
 void Discovery::listenLoop() {

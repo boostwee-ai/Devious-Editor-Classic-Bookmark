@@ -28,7 +28,7 @@ Session::~Session() {
 bool Session::startHost() {
     if (m_state.load() != SessionState::Disconnected) return false;
 
-    if (!utils::Platform::initializeSockets()) return false;
+    if (!dutils::Platform::initializeSockets()) return false;
 
     m_listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (m_listenSock < 0) return false;
@@ -42,13 +42,13 @@ bool Session::startHost() {
     addr.sin_addr.s_addr = INADDR_ANY;
 
     if (bind(m_listenSock, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-        utils::Platform::closeSocket(m_listenSock);
+        dutils::Platform::closeSocket(m_listenSock);
         m_listenSock = -1;
         return false;
     }
 
     if (listen(m_listenSock, 1) == -1) {
-        utils::Platform::closeSocket(m_listenSock);
+        dutils::Platform::closeSocket(m_listenSock);
         m_listenSock = -1;
         return false;
     }
@@ -61,7 +61,7 @@ bool Session::startHost() {
 bool Session::connectToPeer(const std::string& ip) {
     if (m_state.load() != SessionState::Disconnected) return false;
 
-    if (!utils::Platform::initializeSockets()) return false;
+    if (!dutils::Platform::initializeSockets()) return false;
 
     m_peerSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (m_peerSock < 0) return false;
@@ -72,7 +72,7 @@ bool Session::connectToPeer(const std::string& ip) {
     inet_pton(AF_INET, ip.c_str(), &addr.sin_addr);
 
     if (connect(m_peerSock, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-        utils::Platform::closeSocket(m_peerSock);
+        dutils::Platform::closeSocket(m_peerSock);
         m_peerSock = -1;
         return false;
     }
@@ -90,12 +90,12 @@ void Session::disconnect() {
     if (currentState == SessionState::Disconnected) return;
 
     if (m_listenSock != -1) {
-        utils::Platform::closeSocket(m_listenSock);
+        dutils::Platform::closeSocket(m_listenSock);
         m_listenSock = -1;
     }
 
     if (m_peerSock != -1) {
-        utils::Platform::closeSocket(m_peerSock);
+        dutils::Platform::closeSocket(m_peerSock);
         m_peerSock = -1;
     }
 
@@ -148,7 +148,7 @@ void Session::hostAcceptLoop() {
     int clientSock = accept(m_listenSock, (struct sockaddr*)&clientAddr, &clientLen);
     
     if (clientSock >= 0) {
-        utils::Platform::closeSocket(m_listenSock);
+        dutils::Platform::closeSocket(m_listenSock);
         m_listenSock = -1;
 
         m_peerSock = clientSock;

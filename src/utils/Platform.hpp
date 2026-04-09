@@ -4,7 +4,7 @@
 #include <vector>
 #include <cstdint>
 
-namespace utils {
+namespace dutils {
 
 class Platform {
 public:
@@ -14,4 +14,4 @@ public:
     static int getLastError();
 };
 
-} // namespace utils
+} // namespace dutils

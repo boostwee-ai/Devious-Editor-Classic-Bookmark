@@ -12,7 +12,7 @@
 #include <errno.h>
 #endif
 
-namespace utils {
+namespace dutils {
 
 bool Platform::initializeSockets() {
 #ifdef _WIN32
@@ -50,4 +50,4 @@ int Platform::getLastError() {
 #endif
 }
 
-} // namespace utils
+} // namespace dutils
