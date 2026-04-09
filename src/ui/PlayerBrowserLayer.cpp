@@ -1,4 +1,5 @@
 #include "PlayerBrowserLayer.hpp"
+#include <Geode/binding/FLAlertLayer.hpp>
 #include "../network/Discovery.hpp"
 #include "../network/Session.hpp"
 #include "../network/Protocol.hpp"
@@ -37,7 +38,7 @@ bool PlayerBrowserLayer::setup() {
 }
 
 void PlayerBrowserLayer::onClose(cocos2d::CCObject* sender) {
-    this->FLAlertLayer::onClose(sender);
+    this->onClose(sender);
 }
 
 void PlayerBrowserLayer::updateList(float dt) {

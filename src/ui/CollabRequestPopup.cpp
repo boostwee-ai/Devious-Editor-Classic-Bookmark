@@ -1,4 +1,5 @@
 #include "CollabRequestPopup.hpp"
+#include <Geode/binding/FLAlertLayer.hpp>
 #include "../network/Session.hpp"
 #include "../network/Protocol.hpp"
 
@@ -50,14 +51,14 @@ bool CollabRequestPopup::setup(std::string const& username) {
 void CollabRequestPopup::onYes(cocos2d::CCObject*) {
     // Send response and setup sync
     network::Session::get().sendPacket(network::Protocol::createPacket(network::PacketType::CollabResponse, "Yes"));
-    this->keyBackClicked();
+    this->onClose(nullptr);
 }
 
 void CollabRequestPopup::onNo(cocos2d::CCObject*) {
     // Decline
     network::Session::get().sendPacket(network::Protocol::createPacket(network::PacketType::CollabResponse, "No"));
     network::Session::get().disconnect();
-    this->keyBackClicked();
+    this->onClose(nullptr);
 }
 
 } // namespace ui
