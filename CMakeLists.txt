@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.29)
 
-# Finding Geode before project() can sometimes help with toolchains
+# Direct inclusion for CI environments where the package registry might be missing
 if(DEFINED ENV{GEODE_SDK})
+    message(STATUS "Using GEODE_SDK from environment: $ENV{GEODE_SDK}")
     set(Geode_DIR "$ENV{GEODE_SDK}/cmake")
-    list(APPEND CMAKE_PREFIX_PATH "$ENV{GEODE_SDK}")
+    include("$ENV{GEODE_SDK}/cmake/GeodeConfig.cmake")
+else()
+    find_package(Geode REQUIRED)
 endif()
-find_package(Geode REQUIRED)
 
 project(devious-editor-classic-bookmark VERSION 1.0.0 LANGUAGES CXX)
 
