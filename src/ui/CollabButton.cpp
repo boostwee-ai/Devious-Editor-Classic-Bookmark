@@ -6,7 +6,8 @@ using namespace geode::prelude;
 namespace ui {
 
 void CollabButton::onCollabButton(cocos2d::CCObject* sender) {
-    ui::PlayerBrowserLayer::create()->show();
+    auto p = ui::PlayerBrowserLayer::create();
+    if (p) p->show();
 }
 
 } // namespace ui
