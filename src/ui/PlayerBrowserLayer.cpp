@@ -37,7 +37,7 @@ bool PlayerBrowserLayer::setup() {
 }
 
 void PlayerBrowserLayer::onClose(cocos2d::CCObject* sender) {
-    Popup::onClose(sender);
+    geode::Popup<>::onClose(sender);
 }
 
 void PlayerBrowserLayer::updateList(float dt) {
