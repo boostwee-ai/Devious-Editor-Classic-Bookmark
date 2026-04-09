@@ -7,6 +7,8 @@
 namespace ui {
 
 class CollabRequestPopup : public geode::Popup<std::string const&> {
+    using geode::Popup<std::string const&>::m_mainLayer;
+    using geode::Popup<std::string const&>::m_noElasticity;
 protected:
     bool setup(std::string const& username) override;
 
