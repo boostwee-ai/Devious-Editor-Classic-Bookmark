@@ -16,13 +16,17 @@ class $modify(MyEditorUI, EditorUI) {
 
         auto menu = CCMenu::create();
         auto btnSprite = ButtonSprite::create("Collab");
-        auto btn = CCMenuItemSpriteExtra::create(btnSprite, this, menu_selector(ui::CollabButton::onCollabButton));
+        auto btn = CCMenuItemSpriteExtra::create(btnSprite, this, menu_selector(MyEditorUI::onCollabButton));
         menu->addChild(btn);
         
         menu->setPosition({ CCDirector::sharedDirector()->getWinSize().width - 40.f, 40.f });
         this->addChild(menu);
 
         return true;
+    }
+
+    void onCollabButton(cocos2d::CCObject* sender) {
+        ui::CollabButton::onCollabButton(sender);
     }
 
     void moveObject(GameObject* p0, cocos2d::CCPoint p1) {
@@ -32,8 +36,8 @@ class $modify(MyEditorUI, EditorUI) {
         }
     }
 
-    void scaleObjects(cocos2d::CCArray* p0, float p1, cocos2d::CCPoint p2) {
-        EditorUI::scaleObjects(p0, p1, p2);
+    void scaleObjects(cocos2d::CCArray* p0, float p1, cocos2d::CCPoint p2, bool p3, bool p4, bool p5) {
+        EditorUI::scaleObjects(p0, p1, p2, p3, p4, p5);
         if (!network::SyncManager::get().isSyncing()) {
             for (auto item : CCArrayExt<GameObject*>(p0)) {
                 network::SyncManager::get().sendAction(editor::ActionType::TransformObject, editor::ActionSerializer::serializeTransform(item));
