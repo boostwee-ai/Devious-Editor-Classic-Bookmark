@@ -7,11 +7,10 @@
 namespace ui {
 
 class PlayerBrowserLayer : public geode::Popup<> {
-public:
+protected:
     using geode::Popup<>::m_mainLayer;
     using geode::Popup<>::m_noElasticity;
-    using geode::Popup<>::show;
-protected:
+    
     bool setup() override;
     void onClose(cocos2d::CCObject*) override;
 
