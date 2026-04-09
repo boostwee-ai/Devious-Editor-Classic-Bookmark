@@ -16,8 +16,6 @@ project(devious-editor-classic-bookmark VERSION 1.0.0 LANGUAGES CXX)
 
 if(WIN32)
 	add_compile_definitions(_WIN32)
-	add_compile_definitions(WIN32_LEAN_AND_MEAN)
-	add_compile_definitions(_WINSOCKAPI_)
 endif()
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
@@ -34,4 +32,5 @@ setup_geode_mod(${PROJECT_NAME})
 
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} ws2_32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE WIN32_LEAN_AND_MEAN _WINSOCKAPI_)
 endif()
