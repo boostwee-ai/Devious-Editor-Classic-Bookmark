@@ -1,21 +1,24 @@
 #pragma once
 
 #include <Geode/Geode.hpp>
-#include <Geode/ui/Popup.hpp>
-#include <Geode/binding/FLAlertLayer.hpp>
 
 namespace ui {
 
-class PlayerBrowserLayer : public geode::Popup {
+class PlayerBrowserLayer : public cocos2d::CCLayer {
 protected:
-    bool init(float width, float height);
+    bool init() override;
+    void onClose(cocos2d::CCObject* sender);
     
     void updateList(float dt);
     
     cocos2d::CCNode* m_listLayer;
+    cocos2d::CCLayer* m_mainLayer;
 
 public:
     static PlayerBrowserLayer* create();
+    void show();
+    
+    void keyBackClicked() override;
 };
 
 } // namespace ui

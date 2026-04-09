@@ -9,7 +9,7 @@ namespace ui {
 
 CollabRequestPopup* CollabRequestPopup::create(std::string const& username) {
     auto ret = new CollabRequestPopup();
-    if (ret && ret->init(300.f, 200.f, username)) {
+    if (ret && ret->init(username)) {
         ret->autorelease();
         return ret;
     }
@@ -17,17 +17,30 @@ CollabRequestPopup* CollabRequestPopup::create(std::string const& username) {
     return nullptr;
 }
 
-bool CollabRequestPopup::init(float width, float height, std::string const& username) {
-    if (!geode::Popup::init(width, height)) return false;
-    m_username = username;
+bool CollabRequestPopup::init(std::string const& username) {
+    if (!CCLayer::init()) return false;
 
-    this->m_noElasticity = true;
-    this->setTitle("Collaboration Request");
+    auto winSize = CCDirector::sharedDirector()->getWinSize();
+    
+    auto darken = CCLayerColor::create(ccc4(0, 0, 0, 150));
+    this->addChild(darken);
+
+    m_mainLayer = CCLayer::create();
+    this->addChild(m_mainLayer);
+
+    auto bg = CCScale9Sprite::create("GJ_square01.png", { 0, 0, 80, 80 });
+    bg->setContentSize({ 300.f, 200.f });
+    bg->setPosition(winSize / 2);
+    m_mainLayer->addChild(bg);
+
+    auto title = CCLabelBMFont::create("Collaboration Request", "goldFont.fnt");
+    title->setPosition({winSize.width / 2, winSize.height / 2 + 85.f});
+    m_mainLayer->addChild(title);
 
     auto label = CCLabelBMFont::create(fmt::format("{} would like to collaborate with you.", username).c_str(), "bigFont.fnt");
     label->setScale(0.5f);
-    label->setPosition(this->getContentSize() / 2 + CCPoint{0.f, 20.f});
-    this->addChild(label);
+    label->setPosition(winSize / 2 + ccp(0, 20));
+    m_mainLayer->addChild(label);
 
     auto yesBtnSprite = ButtonSprite::create("Yes");
     auto noBtnSprite = ButtonSprite::create("No");
@@ -39,23 +52,42 @@ bool CollabRequestPopup::init(float width, float height, std::string const& user
     menu->addChild(yesBtn);
     menu->addChild(noBtn);
     menu->alignItemsHorizontallyWithPadding(20.f);
-    menu->setPosition(this->getContentSize() / 2 - CCPoint{0.f, 30.f});
-    this->addChild(menu);
+    menu->setPosition(winSize / 2 + ccp(0, -30));
+    m_mainLayer->addChild(menu);
+
+    this->setTouchEnabled(true);
+    this->setKeypadEnabled(true);
 
     return true;
 }
 
+void CollabRequestPopup::show() {
+    auto scene = CCDirector::sharedDirector()->getRunningScene();
+    if (!scene) return;
+    this->retain();
+    scene->addChild(this, 105);
+    this->release();
+}
+
 void CollabRequestPopup::onYes(cocos2d::CCObject*) {
-    // Send response and setup sync
     network::Session::get().sendPacket(network::Protocol::createPacket(network::PacketType::CollabResponse, "Yes"));
     this->onClose(nullptr);
 }
 
 void CollabRequestPopup::onNo(cocos2d::CCObject*) {
-    // Decline
     network::Session::get().sendPacket(network::Protocol::createPacket(network::PacketType::CollabResponse, "No"));
     network::Session::get().disconnect();
     this->onClose(nullptr);
+}
+
+void CollabRequestPopup::onClose(cocos2d::CCObject*) {
+    this->setKeypadEnabled(false);
+    this->setTouchEnabled(false);
+    this->removeFromParentAndCleanup(true);
+}
+
+void CollabRequestPopup::keyBackClicked() {
+    onClose(nullptr);
 }
 
 } // namespace ui

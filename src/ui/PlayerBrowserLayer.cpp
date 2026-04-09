@@ -10,7 +10,7 @@ namespace ui {
 
 PlayerBrowserLayer* PlayerBrowserLayer::create() {
     auto ret = new PlayerBrowserLayer();
-    if (ret && ret->init(360.f, 240.f)) {
+    if (ret && ret->init()) {
         ret->autorelease();
         return ret;
     }
@@ -18,22 +18,72 @@ PlayerBrowserLayer* PlayerBrowserLayer::create() {
     return nullptr;
 }
 
-bool PlayerBrowserLayer::init(float width, float height) {
-    if (!geode::Popup::init(width, height)) return false;
+bool PlayerBrowserLayer::init() {
+    if (!CCLayer::init()) return false;
 
-    this->m_noElasticity = true;
-    this->setTitle("LAN Players");
+    auto winSize = CCDirector::sharedDirector()->getWinSize();
+    
+    // Darken background
+    auto darken = CCLayerColor::create(ccc4(0, 0, 0, 150));
+    this->addChild(darken);
+
+    m_mainLayer = CCLayer::create();
+    this->addChild(m_mainLayer);
+
+    // Background sprite
+    auto bg = CCScale9Sprite::create("GJ_square01.png", { 0, 0, 80, 80 });
+    bg->setContentSize({ 360.f, 240.f });
+    bg->setPosition(winSize / 2);
+    m_mainLayer->addChild(bg);
+
+    // Title
+    auto title = CCLabelBMFont::create("LAN Players", "goldFont.fnt");
+    title->setPosition({winSize.width / 2, winSize.height / 2 + 105.f});
+    m_mainLayer->addChild(title);
+
+    // Close button
+    auto closeSprite = CCSprite::createWithSpriteFrameName("GJ_closeBtn_001.png");
+    auto closeBtn = CCMenuItemSpriteExtra::create(
+        closeSprite,
+        this,
+        menu_selector(PlayerBrowserLayer::onClose)
+    );
+    auto closeMenu = CCMenu::create();
+    closeMenu->addChild(closeBtn);
+    closeMenu->setPosition({winSize.width / 2 - 170.f, winSize.height / 2 + 110.f});
+    m_mainLayer->addChild(closeMenu);
     
     m_listLayer = CCNode::create();
     m_listLayer->setContentSize({340.f, 180.f});
-    m_listLayer->setPosition(this->getContentSize() / 2 - CCPoint{0.f, 10.f});
+    m_listLayer->setPosition(winSize / 2 + ccp(0, -10));
     m_listLayer->setAnchorPoint({0.5f, 0.5f});
-    this->addChild(m_listLayer);
+    m_mainLayer->addChild(m_listLayer);
 
     this->schedule(schedule_selector(PlayerBrowserLayer::updateList), 1.0f);
     updateList(0.f);
 
+    this->setTouchEnabled(true);
+    this->setKeypadEnabled(true);
+
     return true;
+}
+
+void PlayerBrowserLayer::show() {
+    auto scene = CCDirector::sharedDirector()->getRunningScene();
+    if (!scene) return;
+    this->retain();
+    scene->addChild(this, 100);
+    this->release();
+}
+
+void PlayerBrowserLayer::onClose(cocos2d::CCObject* sender) {
+    this->setKeypadEnabled(false);
+    this->setTouchEnabled(false);
+    this->removeFromParentAndCleanup(true);
+}
+
+void PlayerBrowserLayer::keyBackClicked() {
+    onClose(nullptr);
 }
 
 void PlayerBrowserLayer::updateList(float dt) {
@@ -60,10 +110,9 @@ void PlayerBrowserLayer::updateList(float dt) {
         btnSprite->setScale(0.5f);
         
         auto btn = CCMenuItemExt::createSpriteExtra(btnSprite, [this, peer](auto) {
-            // Initiate connection and send request
             if (network::Session::get().connectToPeer(peer.ip)) {
                 matjson::Value json;
-                json["user"] = network::Discovery::get().getActivePeers().empty() ? "Me" : "Host";
+                json["user"] = "Collab";
                 std::string payload = json.dump(matjson::NO_INDENTATION);
                 auto packet = network::Protocol::createPacket(network::PacketType::CollabRequest, payload);
                 network::Session::get().sendPacket(packet);
