@@ -1,5 +1,6 @@
 #include "SyncManager.hpp"
 #include "Session.hpp"
+#include "../ui/CollabRequestPopup.hpp"
 #include <Geode/Geode.hpp>
 
 using namespace geode::prelude;
@@ -99,6 +100,27 @@ void SyncManager::handleIncomingPacket(const PacketHeader& header, const std::ve
         case PacketType::SessionLeave: {
             FLAlertLayer::create("Collab Status", "The host has left the session.", "OK")->show();
             Session::get().disconnect();
+            break;
+        }
+        case PacketType::CollabRequest: {
+            auto jsonRes = matjson::parse(payloadStr);
+            if (jsonRes.isOk()) {
+                auto json = jsonRes.unwrap();
+                std::string username = json["user"].asString().unwrapOr("Unknown");
+                auto p = ui::CollabRequestPopup::create(username);
+                if (p) p->show();
+            }
+            break;
+        }
+        case PacketType::CollabResponse: {
+            if (payloadStr == "Yes") {
+                log::info("Collaboration accepted!");
+                // Host sends level to client
+                SyncManager::get().sendLevelSync();
+            } else {
+                FLAlertLayer::create("Collab Status", "Collaboration request was declined.", "OK")->show();
+                Session::get().disconnect();
+            }
             break;
         }
         default:

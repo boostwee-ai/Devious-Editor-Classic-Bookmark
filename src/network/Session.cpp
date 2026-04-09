@@ -67,7 +67,11 @@ bool Session::startHost() {
 }
 
 bool Session::connectToPeer(const std::string& ip) {
-    if (m_state.load() != SessionState::Disconnected) return false;
+    if (m_state.load() == SessionState::Connected) return false;
+
+    if (m_state.load() == SessionState::HostListening) {
+        disconnect();
+    }
 
     if (!dutils::Platform::initializeSockets()) return false;
 

@@ -111,8 +111,11 @@ void PlayerBrowserLayer::updateList(float dt) {
         
         auto btn = CCMenuItemExt::createSpriteExtra(btnSprite, [this, peer](auto) {
             if (network::Session::get().connectToPeer(peer.ip)) {
+                auto username = GJAccountManager::sharedState()->m_username;
+                if (username.empty()) username = "Player";
+                
                 matjson::Value json;
-                json["user"] = "Collab";
+                json["user"] = username;
                 std::string payload = json.dump(matjson::NO_INDENTATION);
                 auto packet = network::Protocol::createPacket(network::PacketType::CollabRequest, payload);
                 network::Session::get().sendPacket(packet);
