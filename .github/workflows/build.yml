@@ -1,0 +1,28 @@
+name: Build Geode Mod
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build mod
+      uses: geode-sdk/build-geode-mod@main
+      with:
+        bindings: geode-sdk/bindings
+        bindings-ref: main
+        cli: v3.2.0
+        combine: true
+        export-cli-errors: true

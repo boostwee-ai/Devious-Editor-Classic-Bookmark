@@ -1,0 +1,18 @@
+{
+	"geode": "5.5.3",
+	"gd": "2.2081",
+	"version": "v1.0.0",
+	"id": "bishop.devious-editor-classic-bookmark",
+	"name": "Devious Editor Classic Bookmark",
+	"developer": "Bishop",
+	"description": "Real-time LAN collaborative level editor for Geometry Dash.",
+	"early-load": false,
+	"settings": {
+		"enable_collab": {
+			"name": "Enable Collaboration",
+			"description": "Broadcast presence and receive requests to collaborate on LAN.",
+			"type": "bool",
+			"default": true
+		}
+	}
+}
