@@ -5,11 +5,7 @@ project(devious-editor-classic-bookmark VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-message(STATUS "GEODE_SDK environment variable: $ENV{GEODE_SDK}")
-if(DEFINED ENV{GEODE_SDK})
-    set(Geode_DIR "$ENV{GEODE_SDK}")
-endif()
-find_package(Geode REQUIRED)
+find_package(Geode REQUIRED HINTS "$ENV{GEODE_SDK}")
 
 # Need sockets for mac/windows
 if(WIN32)
@@ -18,8 +14,8 @@ endif()
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
-add_geode_mod(${PROJECT_NAME} ${SOURCES})
+setup_geode_mod(${PROJECT_NAME} SOURCES ${SOURCES})
 
 if(WIN32)
-    target_link_libraries(${PROJECT_NAME} ws2_32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32)
 endif()

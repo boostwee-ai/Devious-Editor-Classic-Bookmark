@@ -14,8 +14,10 @@ jobs:
         include:
           - name: Windows
             os: windows-latest
+            target: Win
           - name: macOS
             os: macos-latest
+            target: Mac
     
     runs-on: ${{ matrix.os }}
     
@@ -26,3 +28,4 @@ jobs:
       uses: geode-sdk/build-geode-mod@main
       with:
         combine: true
+        target: ${{ matrix.target }}
