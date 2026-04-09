@@ -18,7 +18,7 @@ CollabRequestPopup* CollabRequestPopup::create(std::string const& username) {
 }
 
 bool CollabRequestPopup::setup(std::string const& username) {
-    m_noElasticity = true;
+    this->m_noElasticity = true;
     this->setTitle("Collaboration Request");
 
     auto label = CCLabelBMFont::create(fmt::format("{} would like to collaborate with you.", username).c_str(), "bigFont.fnt");

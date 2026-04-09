@@ -19,7 +19,7 @@ PlayerBrowserLayer* PlayerBrowserLayer::create() {
 }
 
 bool PlayerBrowserLayer::setup() {
-    m_noElasticity = true;
+    this->m_noElasticity = true;
     this->setTitle("LAN Players");
     
     m_listLayer = CCNode::create();
@@ -38,7 +38,7 @@ bool PlayerBrowserLayer::setup() {
 }
 
 void PlayerBrowserLayer::onClose(cocos2d::CCObject* sender) {
-    this->onClose(sender);
+    geode::Popup<>::onClose(sender);
 }
 
 void PlayerBrowserLayer::updateList(float dt) {
