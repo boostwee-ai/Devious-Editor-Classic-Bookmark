@@ -43,7 +43,9 @@ class $modify(MyEditorUI, EditorUI) {
 };
 
 class $modify(MyLevelEditorLayer, LevelEditorLayer) {
-    ui::RemotePlayerIndicator* m_indicator;
+    struct Fields {
+        ui::RemotePlayerIndicator* m_indicator;
+    };
 
     bool init(GJGameLevel* p0, bool p1) {
         if (!LevelEditorLayer::init(p0, p1)) return false;
